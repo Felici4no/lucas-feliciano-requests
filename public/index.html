@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulário de Solicitação - Eng. de Software</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f4f8;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+      color: #444;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #2e86de;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1b4f72;
+    }
+
+    @media (max-width: 600px) {
+      form {
+        padding: 15px;
+      }
+
+      h2 {
+        font-size: 1.4em;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Solicitação de Serviço - Engenharia de Software</h2>
+
+  <form id="form-servico">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="telefone">Telefone:</label>
+    <input type="text" id="telefone" name="telefone" placeholder="Apenas números">
+
+    <label for="servicos">Serviços solicitados:</label>
+    <select id="servicos" name="servicos" required>
+      <option value="">Selecione um serviço</option>
+      <option value="desenvolvimento-web">Desenvolvimento Web</option>
+      <option value="aplicativo-mobile">Aplicativo Mobile</option>
+      <option value="automacao">Automação com Arduino/Raspberry</option>
+      <option value="consultoria">Consultoria Técnica</option>
+      <option value="outro">Outro</option>
+    </select>
+
+    <label for="detalhes">Detalhes adicionais:</label>
+    <textarea id="detalhes" name="detalhes" rows="4"></textarea>
+
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+
+    <button type="submit">Enviar Solicitação</button>
+  </form>
+
+  <script>
+    // Captura a localização ao carregar a página
+    window.onload = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+        }, () => {
+          alert('Erro ao obter a localização. Você pode continuar sem ela.');
+        });
+      }
+    };
+
+    // Envio dos dados via POST
+    document.getElementById('form-servico').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const data = {
+        nome: document.getElementById('nome').value,
+        telefone: document.getElementById('telefone').value,
+        servicos: document.getElementById('servicos').value,
+        detalhes: document.getElementById('detalhes').value,
+        latitude: document.getElementById('latitude').value,
+        longitude: document.getElementById('longitude').value
+      };
+
+      const response = await fetch('/api/solicitar-servico', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        alert('Solicitação enviada com sucesso!');
+      } else {
+        alert('Erro ao enviar a solicitação.');
+      }
+    });
+  </script>
+</body>
+</html>
