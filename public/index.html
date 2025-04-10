@@ -135,7 +135,7 @@
         longitude: document.getElementById('longitude').value
       };
 
-      const response = await fetch('/api/solicitar-servico', {
+      const response = await fetch('/api/enviar_localizacao', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
