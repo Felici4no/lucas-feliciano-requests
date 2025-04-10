@@ -1,6 +1,4 @@
-const fetch = require('node-fetch');
-
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { latitude, longitude } = req.body;
 
@@ -13,7 +11,7 @@ module.exports = async (req, res) => {
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
     try {
-      await fetch(telegramUrl, {
+      const telegramResponse = await fetch(telegramUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -22,11 +20,16 @@ module.exports = async (req, res) => {
         }),
       });
 
+      if (!telegramResponse.ok) {
+        throw new Error(`Erro do Telegram: ${telegramResponse.statusText}`);
+      }
+
       res.status(200).json({ status: 'Localização enviada com sucesso!' });
     } catch (error) {
+      console.error('Erro ao enviar localização:', error);
       res.status(500).json({ error: 'Erro ao enviar a localização.' });
     }
   } else {
     res.status(405).json({ error: 'Método não permitido.' });
   }
-};
+}
